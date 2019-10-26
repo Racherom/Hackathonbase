@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  web:
+    image: nginx:alpine
+    depends_on:
+      - vue
+      - go-api
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./web/www/:/var/www
+      - ./web/nginx/conf.d/:/etc/nginx/conf.d/
+  vue:
+    build:
+      context: ./vue/
+      target: 'build-stage'
+    restart: always
+    volumes:
+    - './vue/app:/app'
+    command: /bin/sh -c "npm run serve"
+  go-api:
+    build:
+      context: ./go/
+      target: 'build-stage'
+    restart: always
+    volumes:
+    - './go/app:/app'
+    command: /bin/sh -c "go run ."
